@@ -466,17 +466,23 @@ class Versions(stats: StatTracker[UIO], forms: OreForms, factory: ProjectFactory
     * @param versionString Version string
     * @return Sent file
     */
-  def download(author: String, slug: String, versionString: String, token: Option[String]): Action[AnyContent] =
+  def download(
+      author: String,
+      slug: String,
+      versionString: String,
+      token: Option[String],
+      confirm: Boolean
+  ): Action[AnyContent] =
     ProjectAction(author, slug).asyncF { implicit request =>
       val project = request.project
-      getVersion(project, versionString).flatMap(sendVersion(project, _, token))
+      getVersion(project, versionString).flatMap(sendVersion(project, _, token, confirm))
     }
 
-  private def sendVersion(project: Project, version: Model[Version], token: Option[String])(
+  private def sendVersion(project: Project, version: Model[Version], token: Option[String], confirm: Boolean)(
       implicit req: ProjectRequest[_]
   ): UIO[Result] = {
     checkConfirmation(version, token).flatMap { passed =>
-      if (passed)
+      if (passed || confirm)
         _sendVersion(project, version)
       else
         UIO.succeed(
@@ -569,9 +575,10 @@ class Versions(stats: StatTracker[UIO], forms: OreForms, factory: ProjectFactory
         .flatMap { version =>
           // generate a unique "warning" object to ensure the user has landed
           // on the warning before downloading
-          val token      = UUID.randomUUID().toString
-          val expiration = OffsetDateTime.now().plus(this.config.security.unsafeDownloadMaxAge, ChronoUnit.MILLIS)
-          val address    = InetString(StatTracker.remoteAddress)
+          val token = UUID.randomUUID().toString
+          val expiration =
+            OffsetDateTime.now().plus(this.config.ore.projects.unsafeDownloadMaxAge.toMillis, ChronoUnit.MILLIS)
+          val address = InetString(StatTracker.remoteAddress)
           // remove old warning attached to address that are expired (or duplicated for version)
           val removeWarnings = service.deleteWhere(DownloadWarning) { warning =>
             (warning.address === address || warning.expiration < OffsetDateTime
@@ -746,7 +753,7 @@ class Versions(stats: StatTracker[UIO], forms: OreForms, factory: ProjectFactory
         .subflatMap(identity)
         .toRight(NotFound)
         .toZIO
-        .flatMap(sendVersion(request.project, _, token))
+        .flatMap(sendVersion(request.project, _, token, confirm = false))
     }
   }
 
