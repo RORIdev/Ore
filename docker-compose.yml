@@ -14,7 +14,7 @@ services:
       context: .
       dockerfile: pgDockerfile
     volumes:
-      - ore-db:/var/lib/postgresql
+      - ore-db:/var/lib/postgresql/data
     networks:
       - web
   app:
