@@ -148,9 +148,11 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
     try {
       val content = LazyList.continually(bufferedReader.readLine()).takeWhile(_ != null).mkString("\n")
       val info = new PluginDescription(content)
-      if (info.getName != null) 
-        dataValues += StringDataValue("id", info.getName)
-      
+      if (info.getName != null) {
+        dataValues += StringDataValue("name", info.getName)
+        dataValues += StringDataValue("id", info.getName.toLowerCase)
+      }
+
       if (info.getVersion != null)
         dataValues += StringDataValue("version", info.getVersion)
         
