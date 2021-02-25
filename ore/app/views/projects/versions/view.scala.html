@@ -189,13 +189,16 @@
                     </div>
                     <ul class="list-group">
 
-                        @for(platform <- Platform.getPlatforms(v.dependencies.map(_._1.pluginId).toList)) {
+                        @for(platform <- Platform.getPlatformsByDependencies(v.dependencies.map(_._1).toList)) {
                             @v.v.dependencies.find(_.pluginId == platform.dependencyId).map { dependency =>
                                 <li class="list-group-item">
                                     <a href="@{platform.url}">
                                         <strong>@{platform.name}</strong>
                                     </a>
                                     <p class="version-string">@dependency.version</p>
+                                    @if(!dependency.required) {
+                                        <p><em>(Optional)</em></p>
+                                    }
                                 </li>
                             }
                         }
@@ -216,6 +219,9 @@
                                 </div>
                             }
                         <p class="version-string">@depend.version</p>
+                        @if(!depend.required) {
+                            <p><em>(Optional)</em></p>
+                        }
                         </li>
                         }
                     </ul>

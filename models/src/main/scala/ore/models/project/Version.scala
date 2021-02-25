@@ -92,7 +92,7 @@ case class Version(
   def dependencies: List[Dependency] =
     for (depend <- this.dependencyIds) yield {
       val data = depend.split(":")
-      Dependency(data(0), data.lift(1))
+      Dependency(data(0), data.lift(2), data(1).toBoolean)
     }
 
   /**

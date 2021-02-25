@@ -87,8 +87,8 @@ case class PendingVersion(
   def asVersion(projectId: DbRef[Project], channelId: DbRef[Channel]): Version = Version(
     versionString = versionString,
     dependencyIds = dependencies.map {
-      case Dependency(pluginId, Some(version)) => s"$pluginId:$version"
-      case Dependency(pluginId, None)          => pluginId
+      case Dependency(pluginId, Some(version), required) => s"$pluginId:$required:$version"
+      case Dependency(pluginId, None, required)          => s"$pluginId:$required"
     },
     description = description,
     projectId = projectId,

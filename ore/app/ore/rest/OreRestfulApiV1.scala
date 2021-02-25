@@ -141,7 +141,7 @@ trait OreRestfulApiV1 extends OreWrites {
       tags: Seq[Model[VersionTag]]
   ): JsObject = {
     val dependencies: List[JsObject] = v.dependencies.map { dependency =>
-      obj("pluginId" -> dependency.pluginId, "version" -> dependency.version)
+      obj("pluginId" -> dependency.pluginId, "version" -> dependency.version, "required" -> dependency.required)
     }
     val json = obj(
       "id"            -> v.id.value,

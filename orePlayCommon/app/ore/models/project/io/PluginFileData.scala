@@ -13,6 +13,8 @@ import ore.db.{DbRef, Model, ModelService}
 import ore.models.project.{TagColor, Version, VersionTag}
 import org.spongepowered.plugin.meta.McModInfo
 
+import scala.collection.mutable
+
 /**
   * The metadata within a [[PluginFile]]
   *
@@ -165,15 +167,18 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
       if (info.getAuthors != null)
         dataValues += StringListValue("authors", info.getAuthors.asScala.toSeq)
 
+      var dependencies: Seq[Dependency] = null
       if (info.getDepend != null) {
-        val dependencies = info.getDepend.asScala.map(p => Dependency(p, None)).toSeq
-        dataValues += DependencyDataValue("dependencies", dependencies)
+        dependencies = info.getDepend.asScala.map(p => Dependency(p.toLowerCase(), None, required = true)).toSeq
       }
 
       if (info.getSoftDepend != null) {
-        val dependencies = info.getDepend.asScala.map(p => Dependency(p, None)).toSeq
-        dataValues += DependencyDataValue("softDependencies", dependencies)
+        val softDeps = info.getDepend.asScala.map(p => Dependency(p.toLowerCase(), None, required = false)).toSeq
+        dependencies ++= softDeps
       }
+      
+      if (dependencies != null)
+        dataValues += DependencyDataValue("dependencies", dependencies.toList)
       
       if (info.getCompatibleAPIs != null)
         dataValues += StringListValue("nukkitApis", info.getAuthors.asScala.toSeq)
@@ -220,7 +225,7 @@ object McModInfoHandler extends FileTypeHandler("mcmod.info") {
           dataValues += StringListValue("authors", metadata.getAuthors.asScala.toSeq)
 
         if (metadata.getDependencies != null) {
-          val dependencies = metadata.getDependencies.asScala.map(p => Dependency(p.getId, Option(p.getVersion))).toSeq
+          val dependencies = metadata.getDependencies.asScala.map(p => Dependency(p.getId, Option(p.getVersion), required = true)).toSeq
           dataValues += DependencyDataValue("dependencies", dependencies)
         }
 

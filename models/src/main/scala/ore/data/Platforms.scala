@@ -1,13 +1,10 @@
 package ore.data
 
 import scala.language.higherKinds
-
 import scala.collection.immutable
-
 import ore.data.project.Dependency
 import ore.db.{DbRef, Model, ModelService}
 import ore.models.project.{TagColor, Version, VersionTag}
-
 import enumeratum.values._
 
 /**
@@ -35,18 +32,18 @@ object Platform extends IntEnum[Platform] {
   case object Nukkit
       extends Platform(
         0,
-        "Sponge",
+        "Cloudburst Nukkit",
         NukkitCategory,
-        0,
-        "nukkit",
+        1,
+        "!!IMPOSSIBLE!!",
         TagColor.Nukkit,
         "https://ci.opencollab.dev/job/NukkitX/job/Nukkit/job/master/"
       )
 
-  case object SpongeForge
+  case object PowerNukkit
       extends Platform(
-        2,
-        "SpongeForge",
+        1,
+        "PowerNukkit",
         NukkitCategory,
         0,
         "powernukkit",
@@ -83,16 +80,23 @@ object Platform extends IntEnum[Platform] {
         extends Platform(1, "Forge", ForgeCategory, 0, "forge", TagColor.PowerNukkit, "https://files.minecraftforge.net/")
    */
 
-  def getPlatforms(dependencyIds: Seq[String]): Seq[Platform] = {
-    Platform.values
-      .filter(p => dependencyIds.contains(p.dependencyId))
-      .groupBy(_.platformCategory)
-      .flatMap(_._2.groupBy(_.priority).maxBy(_._1)._2)
-      .toSeq
+  def getPlatformsByDependencies(dependencies: Seq[Dependency]): Seq[Platform] = {
+    val requiredDependencyIds = dependencies.filter(_.required).map(_.pluginId)
+    val optionalDependencyIds = dependencies.filter(!_.required).map(_.pluginId)
+    
+    if (requiredDependencyIds.contains(PowerNukkit.dependencyId)) {
+      return Seq(PowerNukkit)
+    }
+    
+    if (optionalDependencyIds.contains(PowerNukkit.dependencyId)) {
+      return Seq(PowerNukkit, Nukkit)
+    }
+    
+    Seq(Nukkit)
   }
 
   def ghostTags(versionId: DbRef[Version], dependencies: Seq[Dependency]): Seq[VersionTag] =
-    getPlatforms(dependencies.map(_.pluginId))
+    getPlatformsByDependencies(dependencies)
       .map(p => p.createGhostTag(versionId, dependencies.find(_.pluginId == p.dependencyId).get.version))
 
   def createPlatformTags[F[_]](versionId: DbRef[Version], dependencies: Seq[Dependency])(
