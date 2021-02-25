@@ -69,7 +69,7 @@ trait ProjectFactory {
     val pluginFileName = uploadData.pluginFileName
 
     // file extension constraints
-    if (!pluginFileName.endsWith(".zip") && !pluginFileName.endsWith(".jar"))
+    if (!pluginFileName.endsWith(".jar"))
       ZIO.fail("error.plugin.fileExtension")
     // check user's public key validity
     else {

@@ -109,6 +109,7 @@ object APIV2QueryProject {
   //private val SpongeForgeMajorMinorMC   = """(\d+\.\d+)\.\d+-\d+-(\d+\.\d+\.\d+)(?:(?:-BETA-\d+)|(?:-RC\d+))?""".r
   //private val SpongeVanillaMajorMinorMC = """(\d+\.\d+)\.\d+-(\d+\.\d+\.\d+)(?:(?:-BETA-\d+)|(?:-RC\d+))?""".r
   //private val OldForgeVersion           = """\d+\.(\d+\.\d+\.\d+)""".r
+  private val PowerNukkitVersion        = """(\d\.\d+\.\d+\.\d+-PN(?>-[A-Z0-9.]+)?(?>-SNAPSHOT)?)""".r
 
   implicit private val artifactVersionOrder: Order[ArtifactVersion] = Order.fromComparable[ArtifactVersion]
 
@@ -185,6 +186,7 @@ object APIV2QueryProject {
                 } -> None //TODO
               case "PowerNukkit" =>
                 lowerBoundVersionStr.collect {
+                  case PowerNukkitVersion(version) => version
                   case MajorMinor(version) => version
                 } -> None //TODO
               case _ => None -> None

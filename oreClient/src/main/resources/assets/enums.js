@@ -30,8 +30,9 @@ export class Platform {
             {id: "Lantern", name: "Lantern", color: { background: "#4EC1B4", foreground: "#FFFFFF" }},
             {id: "Forge",  name: "Forge Mods", parent: true, color: { background: "#DFA86A", foreground: "#FFFFFF" }}
             */
-            {id: "Nukkit", name: "Nukkit Plugins", parent: true, color: { background: "#F7Cf0D", foreground: "#333333" }},
-            {id: "PowerNukkit", name: "PowerNukkit", color: { background: "#910020", foreground: "#FFFFFF" }}
+            {id: "Nukkit", name: "Nukkit Plugins", parent: true, color: { background: "#0093DD", foreground: "#273238" }},
+            {id: "PowerNukkit", name: "PowerNukkit", color: { background: "#910020", foreground: "#FFFFFF" }},
+            {id: "NukkitX", name: "Cloudburst Nukkit", color: { background: "#0093DD", foreground: "#273238" }}
         ];
     }
 

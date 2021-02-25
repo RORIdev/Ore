@@ -1,17 +1,16 @@
 package ore.models.project.io
 
+import cn.nukkit.plugin.PluginDescription
+import cn.nukkit.utils.Utils
+
 import scala.language.higherKinds
-
 import java.io.BufferedReader
-
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 import scala.util.control.NonFatal
-
 import ore.data.project.Dependency
 import ore.db.{DbRef, Model, ModelService}
 import ore.models.project.{TagColor, Version, VersionTag}
-
 import org.spongepowered.plugin.meta.McModInfo
 
 /**
@@ -102,7 +101,7 @@ class PluginFileData(data: Seq[DataValue]) {
 }
 
 object PluginFileData {
-  val fileTypes: Seq[FileTypeHandler] = Seq(McModInfoHandler, ManifestHandler, ModTomlHandler)
+  val fileTypes: Seq[FileTypeHandler] = Seq(NukkitYmlInfoHandler, PluginYmlInfoHandler)
 
   def fileNames: Seq[String] = fileTypes.map(_.fileName).distinct
 
@@ -142,6 +141,52 @@ case class DependencyDataValue(key: String, value: Seq[Dependency]) extends Data
 sealed abstract case class FileTypeHandler(fileName: String) {
   def getData(bufferedReader: BufferedReader): Seq[DataValue]
 }
+
+sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandler(fileName) {
+  override def getData(bufferedReader: BufferedReader): Seq[DataValue] = {
+    val dataValues = new ArrayBuffer[DataValue]
+    try {
+      val content = LazyList.continually(bufferedReader.readLine()).takeWhile(_ != null).mkString("\n")
+      val info = new PluginDescription(content)
+      if (info.getName != null) 
+        dataValues += StringDataValue("id", info.getName)
+      
+      if (info.getVersion != null)
+        dataValues += StringDataValue("version", info.getVersion)
+        
+      if (info.getDescription != null) 
+        dataValues += StringDataValue("description", info.getDescription)
+        
+      if (info.getWebsite != null)
+        dataValues += StringDataValue("url", info.getWebsite)
+        
+      if (info.getAuthors != null)
+        dataValues += StringListValue("authors", info.getAuthors.asScala.toSeq)
+
+      if (info.getDepend != null) {
+        val dependencies = info.getDepend.asScala.map(p => Dependency(p, None)).toSeq
+        dataValues += DependencyDataValue("dependencies", dependencies)
+      }
+
+      if (info.getSoftDepend != null) {
+        val dependencies = info.getDepend.asScala.map(p => Dependency(p, None)).toSeq
+        dataValues += DependencyDataValue("softDependencies", dependencies)
+      }
+      
+      if (info.getCompatibleAPIs != null)
+        dataValues += StringListValue("nukkitApis", info.getAuthors.asScala.toSeq)
+      
+      dataValues.toSeq
+    } catch {
+      case NonFatal(e) =>
+        e.printStackTrace()
+        Nil
+    }
+  }
+}
+
+object NukkitYmlInfoHandler extends NukkitInfoHandler("nukkit.yml")
+object PluginYmlInfoHandler extends NukkitInfoHandler("plugin.yml")
 
 object McModInfoHandler extends FileTypeHandler("mcmod.info") {
 

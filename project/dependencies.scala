@@ -26,6 +26,8 @@ object Version {
   val macWire    = "2.3.7"
   val scalaCache = "0.28.0"
   val flexmark   = "0.62.2"
+  
+  val powerNukkit = "1.3.1.5-PN"
 }
 
 object Deps {
@@ -91,6 +93,7 @@ object Deps {
   ).map(flexmarkDep)
 
   val pluginMeta = "org.spongepowered" % "plugin-meta" % "0.4.1"
+  val powerNukkit = "org.powernukkit" % "powernukkit" % Version.powerNukkit
 
   val javaxMail = "javax.mail"     % "mail"            % "1.4.7"
   val postgres  = "org.postgresql" % "postgresql"      % "42.2.16"
