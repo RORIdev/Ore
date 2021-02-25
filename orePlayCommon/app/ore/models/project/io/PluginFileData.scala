@@ -81,8 +81,8 @@ class PluginFileData(data: Seq[DataValue]) {
     val buffer = new ArrayBuffer[VersionTag]
 
     if (containsMixins) {
-      val mixinTag = VersionTag(versionId, "Mixin", None, TagColor.Mixin)
-      buffer += mixinTag
+      //val mixinTag = VersionTag(versionId, "Mixin", None, TagColor.Mixin)
+      //buffer += mixinTag
     }
 
     service.bulkInsert(buffer.toSeq)
