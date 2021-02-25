@@ -106,9 +106,9 @@ case class APIV2QueryProject(
 }
 object APIV2QueryProject {
   private val MajorMinor                = """(\d+\.\d+)(?:\.\d+)?(?>-SNAPSHOT)?(?>-[a-z0-9]{7,9})?""".r
-  private val SpongeForgeMajorMinorMC   = """(\d+\.\d+)\.\d+-\d+-(\d+\.\d+\.\d+)(?:(?:-BETA-\d+)|(?:-RC\d+))?""".r
-  private val SpongeVanillaMajorMinorMC = """(\d+\.\d+)\.\d+-(\d+\.\d+\.\d+)(?:(?:-BETA-\d+)|(?:-RC\d+))?""".r
-  private val OldForgeVersion           = """\d+\.(\d+\.\d+\.\d+)""".r
+  //private val SpongeForgeMajorMinorMC   = """(\d+\.\d+)\.\d+-\d+-(\d+\.\d+\.\d+)(?:(?:-BETA-\d+)|(?:-RC\d+))?""".r
+  //private val SpongeVanillaMajorMinorMC = """(\d+\.\d+)\.\d+-(\d+\.\d+\.\d+)(?:(?:-BETA-\d+)|(?:-RC\d+))?""".r
+  //private val OldForgeVersion           = """\d+\.(\d+\.\d+\.\d+)""".r
 
   implicit private val artifactVersionOrder: Order[ArtifactVersion] = Order.fromComparable[ArtifactVersion]
 
@@ -146,6 +146,7 @@ object APIV2QueryProject {
             }
 
             tagName match {
+              /*
               case "Sponge" =>
                 lowerBoundVersionStr.collect {
                   case MajorMinor(version) => version
@@ -175,6 +176,16 @@ object APIV2QueryProject {
                         case _                        => None
                       }
                     }
+                } -> None //TODO
+              case _ => None -> None
+              */
+              case "Nukkit" =>
+                lowerBoundVersionStr.collect {
+                  case MajorMinor(version) => version
+                } -> None //TODO
+              case "PowerNukkit" =>
+                lowerBoundVersionStr.collect {
+                  case MajorMinor(version) => version
                 } -> None //TODO
               case _ => None -> None
             }

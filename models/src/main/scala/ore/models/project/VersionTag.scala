@@ -35,14 +35,14 @@ object TagColor extends IntEnum[TagColor] {
   val values: immutable.IndexedSeq[TagColor] = findValues
 
   // Tag colors
-  case object Sponge        extends TagColor(1, "#F7Cf0D", "#333333")
-  case object Forge         extends TagColor(2, "#dfa86a", "#FFFFFF")
+  case object Nukkit        extends TagColor(1, "#F7Cf0D", "#333333")
+  case object PowerNukkit         extends TagColor(2, "#dfa86a", "#FFFFFF")
   case object Unstable      extends TagColor(3, "#FFDAB9", "#333333")
-  case object SpongeForge   extends TagColor(4, "#910020", "#FFFFFF")
-  case object SpongeVanilla extends TagColor(5, "#50C888", "#FFFFFF")
-  case object SpongeCommon  extends TagColor(6, "#5d5dff", "#FFFFFF")
-  case object Lantern       extends TagColor(7, "#4EC1B4", "#FFFFFF")
-  case object Mixin         extends TagColor(8, "#FFA500", "#333333")
+  //case object SpongeForge   extends TagColor(4, "#910020", "#FFFFFF")
+  //case object SpongeVanilla extends TagColor(5, "#50C888", "#FFFFFF")
+  //case object SpongeCommon  extends TagColor(6, "#5d5dff", "#FFFFFF")
+  //case object Lantern       extends TagColor(7, "#4EC1B4", "#FFFFFF")
+  //case object Mixin         extends TagColor(8, "#FFA500", "#333333")
 
   //From the normal color enum
   case object Purple      extends TagColor(9, "#B400FF", "#FFFFFF")

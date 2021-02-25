@@ -22,12 +22,16 @@ export class Category {
 export class Platform {
     static get values() {
         return [
+            /*
             {id: "Sponge", name: "Sponge Plugins", parent: true, color: { background: "#F7Cf0D", foreground: "#333333" }},
             {id: "SpongeForge", name: "SpongeForge", color: { background: "#910020", foreground: "#FFFFFF" }},
             {id: "SpongeVanilla", name: "SpongeVanilla", color: { background: "#50C888", foreground: "#FFFFFF" }},
             {id: "SpongeCommon", name: "SpongeCommon", color: { background: "#5D5DFF", foreground: "#FFFFFF" }},
             {id: "Lantern", name: "Lantern", color: { background: "#4EC1B4", foreground: "#FFFFFF" }},
             {id: "Forge",  name: "Forge Mods", parent: true, color: { background: "#DFA86A", foreground: "#FFFFFF" }}
+            */
+            {id: "Nukkit", name: "Nukkit Plugins", parent: true, color: { background: "#F7Cf0D", foreground: "#333333" }},
+            {id: "PowerNukkit", name: "PowerNukkit", color: { background: "#910020", foreground: "#FFFFFF" }}
         ];
     }
 

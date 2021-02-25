@@ -32,55 +32,56 @@ object Platform extends IntEnum[Platform] {
 
   val values: immutable.IndexedSeq[Platform] = findValues
 
-  case object Sponge
+  case object Nukkit
       extends Platform(
         0,
         "Sponge",
-        SpongeCategory,
+        NukkitCategory,
         0,
-        "spongeapi",
-        TagColor.Sponge,
-        "https://spongepowered.org/downloads"
+        "nukkit",
+        TagColor.Nukkit,
+        "https://ci.opencollab.dev/job/NukkitX/job/Nukkit/job/master/"
       )
 
   case object SpongeForge
       extends Platform(
         2,
         "SpongeForge",
-        SpongeCategory,
-        2,
-        "spongeforge",
-        TagColor.SpongeForge,
-        "https://www.spongepowered.org/downloads/spongeforge"
+        NukkitCategory,
+        0,
+        "powernukkit",
+        TagColor.PowerNukkit,
+        "https://builds.powernukkit.org"
       )
-
-  case object SpongeVanilla
-      extends Platform(
-        3,
-        "SpongeVanilla",
-        SpongeCategory,
-        2,
-        "spongevanilla",
-        TagColor.SpongeVanilla,
-        "https://www.spongepowered.org/downloads/spongevanilla"
-      )
-
-  case object SpongeCommon
-      extends Platform(
-        4,
-        "SpongeCommon",
-        SpongeCategory,
-        1,
-        "sponge",
-        TagColor.SpongeCommon,
-        "https://www.spongepowered.org/downloads"
-      )
-
-  case object Lantern
-      extends Platform(5, "Lantern", SpongeCategory, 2, "lantern", TagColor.Lantern, "https://www.lanternpowered.org/")
-
-  case object Forge
-      extends Platform(1, "Forge", ForgeCategory, 0, "forge", TagColor.Forge, "https://files.minecraftforge.net/")
+/*
+    case object SpongeVanilla
+        extends Platform(
+          3,
+          "SpongeVanilla",
+          NukkitCategory,
+          2,
+          "spongevanilla",
+          TagColor.SpongeVanilla,
+          "https://www.spongepowered.org/downloads/spongevanilla"
+        )
+  
+    case object SpongeCommon
+        extends Platform(
+          4,
+          "SpongeCommon",
+          NukkitCategory,
+          1,
+          "sponge",
+          TagColor.SpongeCommon,
+          "https://www.spongepowered.org/downloads"
+        )
+  
+    case object Lantern
+        extends Platform(5, "Lantern", NukkitCategory, 2, "lantern", TagColor.Lantern, "https://www.lanternpowered.org/")
+  
+    case object Forge
+        extends Platform(1, "Forge", ForgeCategory, 0, "forge", TagColor.PowerNukkit, "https://files.minecraftforge.net/")
+   */
 
   def getPlatforms(dependencyIds: Seq[String]): Seq[Platform] = {
     Platform.values
@@ -118,16 +119,18 @@ sealed trait PlatformCategory {
   def getPlatforms: Seq[Platform] = Platform.values.filter(_.platformCategory == this)
 }
 
-case object SpongeCategory extends PlatformCategory {
-  val name    = "Sponge Plugins"
-  val tagName = "Sponge"
+case object NukkitCategory extends PlatformCategory {
+  val name    = "Nukkit Plugins"
+  val tagName = "nukkit"
 }
 
+/*
 case object ForgeCategory extends PlatformCategory {
   val name    = "Forge Mods"
   val tagName = "Forge"
 }
+*/
 
 object PlatformCategory {
-  def getPlatformCategories: Seq[PlatformCategory] = Seq(SpongeCategory, ForgeCategory)
+  def getPlatformCategories: Seq[PlatformCategory] = Seq(NukkitCategory/*, ForgeCategory*/)
 }
