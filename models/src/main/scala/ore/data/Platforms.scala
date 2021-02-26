@@ -97,7 +97,7 @@ object Platform extends IntEnum[Platform] {
 
   def ghostTags(versionId: DbRef[Version], dependencies: Seq[Dependency]): Seq[VersionTag] =
     getPlatformsByDependencies(dependencies)
-      .map(p => p.createGhostTag(versionId, dependencies.find(_.pluginId == p.dependencyId).map(_.version).orNull))
+      .map(p => p.createGhostTag(versionId, dependencies.find(_.pluginId == p.dependencyId).map(_.version).getOrElse("???")))
 
   def createPlatformTags[F[_]](versionId: DbRef[Version], dependencies: Seq[Dependency])(
       implicit service: ModelService[F]
