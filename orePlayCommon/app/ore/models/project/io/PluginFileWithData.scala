@@ -10,7 +10,7 @@ import ore.util.StringUtils
 
 import cats.effect.Sync
 
-class PluginFileWithData(val path: Path, val user: Model[User], val data: PluginFileData, val fileSize: Long) {
+class PluginFileWithData(val path: Path, val user: Model[User], val data: PluginFileData, val length: Long) {
 
   def delete[F[_]](implicit F: Sync[F]): F[Unit] = F.delay(Files.delete(path))
 

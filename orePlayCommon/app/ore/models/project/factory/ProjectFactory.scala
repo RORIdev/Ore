@@ -66,6 +66,7 @@ trait ProjectFactory {
   def processPluginUpload(uploadData: PluginUpload, owner: Model[User])(
       implicit messages: Messages
   ): ZIO[Blocking, String, PluginFileWithData] = {
+    Logger.info(s"Received the plugin file ${uploadData.pluginFile.getAbsolutePath} with length ${uploadData.pluginFile.length}")
     val pluginFileName = uploadData.pluginFileName
 
     // file extension constraints
@@ -206,14 +207,15 @@ trait ProjectFactory {
     else {
       // Create new pending version
       val path = plugin.path
-
+      
+      Logger.info(s"Creating a PendingVersion for the file with length ${plugin.length} (${plugin.path.toFile.length}) at ${plugin.path}")
       Right(
         PendingVersion(
           versionString = StringUtils.slugify(metaData.version.get),
           dependencies = metaData.dependencies.toList,
           description = metaData.description,
           projectId = projectId,
-          fileSize = plugin.fileSize,
+          fileSize = plugin.length,
           hash = plugin.md5,
           fileName = path.getFileName.toString,
           authorId = plugin.user.id,

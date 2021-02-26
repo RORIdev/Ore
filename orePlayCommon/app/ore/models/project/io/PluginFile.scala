@@ -23,6 +23,8 @@ import cats.syntax.all._
   * @param path Path to uploaded file
   */
 class PluginFile(val path: Path, val user: Model[User]) {
+  val length: Long = path.toFile.ensuring(_.isFile, s"The file ${path.toAbsolutePath} was not found!")
+    .length().ensuring(_ > 0L, s"The file ${path.toAbsolutePath} has 0 length!")
 
   /**
     * Reads the temporary file's plugin meta file and returns the result.
@@ -33,7 +35,6 @@ class PluginFile(val path: Path, val user: Model[User]) {
     */
   def loadMeta[F[_]](implicit messages: Messages, F: Sync[F]): F[Either[String, PluginFileWithData]] = {
     val fileNames = PluginFileData.fileNames
-    val fileSize = path.toFile.length
 
     val res = newJarStream
       .flatMap { in =>
@@ -81,7 +82,7 @@ class PluginFile(val path: Path, val user: Model[User]) {
               val fileData = new PluginFileData(data)
 
               if (!fileData.isValidPlugin) Left(messages("error.plugin.incomplete", "id or version"))
-              else Right(new PluginFileWithData(path, user, fileData, fileSize))
+              else Right(new PluginFileWithData(path, user, fileData, length))
             }
           }
         }
