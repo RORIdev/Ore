@@ -86,11 +86,6 @@ trait ProjectFactory {
       )
 
       val loadData = createDirs *> moveToNewPluginPath.flatMap { newPluginPath =>
-        // create and load a new PluginFile instance for further processing
-        Logger.info(s"Check 1: ${uploadData.pluginFile.getAbsolutePath} File:${uploadData.pluginFile.isFile} Length:${uploadData.pluginFile.length}")
-        Logger.info(s"Check 2: ${uploadData.pluginFile.toFile.getAbsolutePath} File:${uploadData.pluginFile.toFile.isFile} Length:${uploadData.pluginFile.toFile.length}")
-        Logger.info(s"Check 3: ${newPluginPath.toFile.getAbsolutePath} File:${newPluginPath.toFile.isFile} Length:${newPluginPath.toFile.length}")
-        Logger.info(s"Check 4: ${newPluginPath.getParent.toFile.getAbsolutePath} Dir:${newPluginPath.getParent.toFile.isDirectory}")
         val plugin = new PluginFile(newPluginPath, owner)
         plugin.loadMeta[Task]
       }

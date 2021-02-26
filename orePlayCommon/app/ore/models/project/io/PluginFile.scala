@@ -29,12 +29,9 @@ class PluginFile(val path: Path, val user: Model[User]) {
     */
   def loadMeta[F[_]](implicit messages: Messages, F: Sync[F]): F[Either[String, PluginFileWithData]] = {
     val fileNames = PluginFileData.fileNames
-    val Logger = scalalogging.Logger("PluginFile")
-    Logger.info(s"Loading meta for the plugin file ${path.toFile.getAbsolutePath} with length ${path.toFile.length}")
-    val length: Long = path.toFile.ensuring(_.isFile, s"The file ${path.toAbsolutePath} was not found!")
-      .length().ensuring(_ > 0L, s"The file ${path.toAbsolutePath} has 0 length!")
 
-    val res = newJarStream
+    val res = readLength.use { length => 
+     newJarStream
       .flatMap { in =>
         val jarIn = F.delay(in.map(new JarInputStream(_)))
         Resource.make(jarIn) {
@@ -80,15 +77,26 @@ class PluginFile(val path: Path, val user: Model[User]) {
               val fileData = new PluginFileData(data)
 
               if (!fileData.isValidPlugin) Left(messages("error.plugin.incomplete", "id or version"))
-              else Right(new PluginFileWithData(path, user, fileData, length))
+              else 
+                Right(new PluginFileWithData(path, user, fileData, length))
             }
           }
         }
       }
-
+    }
+    
     res.map(_.flatMap(identity))
   }
 
+  private def readLength[F[_]](implicit F: Sync[F]): Resource[F, Long] = {
+    Resource.pure {
+      val Logger = scalalogging.Logger("Projects")
+      Logger.info(s"Loading meta for the plugin file ${path.toFile.getAbsolutePath} with length ${path.toFile.length}")
+      path.toFile.ensuring(_.isFile, s"The file ${path.toAbsolutePath} was not found!")
+        .length().ensuring(_ > 0L, s"The file ${path.toAbsolutePath} has 0 length!")
+    }
+  }
+  
   /**
     * Returns a new [[InputStream]] for this [[PluginFile]]'s main JAR file.
     *
