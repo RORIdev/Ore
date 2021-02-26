@@ -1,21 +1,17 @@
 package ore.models.project.io
 
 import scala.language.higherKinds
-
 import java.io._
 import java.nio.file.{Files, Path}
 import java.util.jar.{JarFile, JarInputStream}
 import java.util.zip.{ZipEntry, ZipFile}
-
 import scala.jdk.CollectionConverters._
-
 import play.api.i18n.Messages
-
 import ore.db.Model
 import ore.models.user.{User, UserOwned}
-
 import cats.effect.{Resource, Sync}
 import cats.syntax.all._
+import com.typesafe.scalalogging
 
 /**
   * Represents an uploaded plugin file.
@@ -23,8 +19,6 @@ import cats.syntax.all._
   * @param path Path to uploaded file
   */
 class PluginFile(val path: Path, val user: Model[User]) {
-  val length: Long = path.toFile.ensuring(_.isFile, s"The file ${path.toAbsolutePath} was not found!")
-    .length().ensuring(_ > 0L, s"The file ${path.toAbsolutePath} has 0 length!")
 
   /**
     * Reads the temporary file's plugin meta file and returns the result.
@@ -35,6 +29,10 @@ class PluginFile(val path: Path, val user: Model[User]) {
     */
   def loadMeta[F[_]](implicit messages: Messages, F: Sync[F]): F[Either[String, PluginFileWithData]] = {
     val fileNames = PluginFileData.fileNames
+    val Logger = scalalogging.Logger("PluginFile")
+    Logger.info(s"Loading meta for the plugin file ${path.toFile.getAbsolutePath} with length ${path.toFile.length}")
+    val length: Long = path.toFile.ensuring(_.isFile, s"The file ${path.toAbsolutePath} was not found!")
+      .length().ensuring(_ > 0L, s"The file ${path.toAbsolutePath} has 0 length!")
 
     val res = newJarStream
       .flatMap { in =>
