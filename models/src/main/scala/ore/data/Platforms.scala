@@ -82,7 +82,7 @@ object Platform extends IntEnum[Platform] {
 
   def getPlatformsByDependencies(dependencies: Seq[Dependency]): Seq[Platform] = {
     val requiredDependencyIds = dependencies.filter(_.required).map(_.pluginId)
-    val optionalDependencyIds = dependencies.filter(!_.required).map(_.pluginId)
+    val optionalDependencyIds = dependencies.filterNot(_.required).map(_.pluginId).filterNot(requiredDependencyIds.contains(_))
     
     if (requiredDependencyIds.contains(PowerNukkit.dependencyId)) {
       return Seq(PowerNukkit)

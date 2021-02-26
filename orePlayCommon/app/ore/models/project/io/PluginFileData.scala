@@ -1,7 +1,6 @@
 package ore.models.project.io
 
 import cn.nukkit.plugin.PluginDescription
-import cn.nukkit.utils.Utils
 
 import scala.language.higherKinds
 import java.io.BufferedReader
@@ -12,8 +11,6 @@ import ore.data.project.Dependency
 import ore.db.{DbRef, Model, ModelService}
 import ore.models.project.{TagColor, Version, VersionTag}
 import org.spongepowered.plugin.meta.McModInfo
-
-import scala.collection.mutable
 
 /**
   * The metadata within a [[PluginFile]]
@@ -167,17 +164,21 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
       if (info.getAuthors != null)
         dataValues += StringListValue("authors", info.getAuthors.asScala.toSeq)
 
-      var dependencies: Seq[Dependency] = null
+      var dependencies: Seq[Dependency] = Seq()
       if (info.getDepend != null) {
         dependencies = info.getDepend.asScala.map(p => Dependency(p.toLowerCase(), None, required = true)).toSeq
       }
 
       if (info.getSoftDepend != null) {
-        val softDeps = info.getDepend.asScala.map(p => Dependency(p.toLowerCase(), None, required = false)).toSeq
+        val requiredIds = dependencies.map(_.pluginId)
+        val softDeps = info.getDepend.asScala
+          .map(p => p.toLowerCase()).filterNot(requiredIds.contains(_))
+          .map(Dependency(_, None, required = false))
+          .toSeq
         dependencies ++= softDeps
       }
       
-      if (dependencies != null)
+      if (dependencies.nonEmpty)
         dataValues += DependencyDataValue("dependencies", dependencies.toList)
       
       if (info.getCompatibleAPIs != null)
