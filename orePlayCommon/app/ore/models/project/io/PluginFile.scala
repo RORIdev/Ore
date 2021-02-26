@@ -27,12 +27,10 @@ class PluginFile(val path: Path, val user: Model[User]) {
     *
     * @return Plugin metadata or an error message
     */
-  def loadMeta[F[_]](implicit messages: Messages, F: Sync[F]): F[Either[String, PluginFileWithData]] = {
+  def loadMeta[F[_]](implicit messages: Messages, length: Long, F: Sync[F]): F[Either[String, PluginFileWithData]] = {
     val fileNames = PluginFileData.fileNames
 
-    val res = readLength.use { length => 
-     newJarStream
-      .flatMap { in =>
+    val res = newJarStream.flatMap { in =>
         val jarIn = F.delay(in.map(new JarInputStream(_)))
         Resource.make(jarIn) {
           case Right(is) => F.delay(is.close())
@@ -83,7 +81,6 @@ class PluginFile(val path: Path, val user: Model[User]) {
           }
         }
       }
-    }
     
     res.map(_.flatMap(identity))
   }

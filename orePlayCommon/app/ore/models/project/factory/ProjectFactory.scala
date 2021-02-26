@@ -67,6 +67,7 @@ trait ProjectFactory {
       implicit messages: Messages
   ): ZIO[Blocking, String, PluginFileWithData] = {
     Logger.info(s"Received the plugin file ${uploadData.pluginFile.getAbsolutePath} with length ${uploadData.pluginFile.length}")
+    val length = uploadData.pluginFile.length
     val pluginFileName = uploadData.pluginFileName
 
     // file extension constraints
@@ -87,7 +88,7 @@ trait ProjectFactory {
 
       val loadData = createDirs *> moveToNewPluginPath.flatMap { newPluginPath =>
         val plugin = new PluginFile(newPluginPath, owner)
-        plugin.loadMeta[Task]
+        plugin.loadMeta[Task](messages, length, taskConcurrentInstance)
       }
 
       loadData.orDie.absolve
