@@ -213,7 +213,7 @@ trait ProjectFactory {
           dependencies = metaData.dependencies.toList,
           description = metaData.description,
           projectId = projectId,
-          fileSize = path.toFile.length,
+          fileSize = plugin.fileSize,
           hash = plugin.md5,
           fileName = path.getFileName.toString,
           authorId = plugin.user.id,

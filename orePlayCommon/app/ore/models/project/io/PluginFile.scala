@@ -33,6 +33,7 @@ class PluginFile(val path: Path, val user: Model[User]) {
     */
   def loadMeta[F[_]](implicit messages: Messages, F: Sync[F]): F[Either[String, PluginFileWithData]] = {
     val fileNames = PluginFileData.fileNames
+    val fileSize = path.toFile.length
 
     val res = newJarStream
       .flatMap { in =>
@@ -80,7 +81,7 @@ class PluginFile(val path: Path, val user: Model[User]) {
               val fileData = new PluginFileData(data)
 
               if (!fileData.isValidPlugin) Left(messages("error.plugin.incomplete", "id or version"))
-              else Right(new PluginFileWithData(path, user, fileData))
+              else Right(new PluginFileWithData(path, user, fileData, fileSize))
             }
           }
         }
